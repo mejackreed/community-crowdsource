@@ -1,8 +1,19 @@
 community-crowdsource
 =====================
 
-Allows communities, neighborhoods, organizations, and really anybody to crowdsource geospatial information for free.  This project uses Google Fusion Tables as the backend geospatial database as well as Google App Engine for deployment.
+Allows communities, neighborhoods, organizations, and really anybody to crowdsource geospatial information for free.
 
+HTML5 and built for mobile browsers.
+
+This project uses Google Fusion Tables as the backend geospatial database as well as Google App Engine for deployment.
+
+Thanks to the other open-source libraries used in this project:
+[Twitter Bootstrap](http://twitter.github.com/bootstrap/) for UI elements
+[Google Maps Utility Library v3 geolocationmarker](http://google-maps-utility-library-v3.googlecode.com/svn/trunk/geolocationmarker/docs/reference.html)
+[Font Awesome](http://fortawesome.github.com/Font-Awesome/)
+
+
+Thanks to [NetCDN](http://www.bootstrapcdn.com/) for hosting the Twitter Bootstrap CDN and [Font Awesome](http://fortawesome.github.com/Font-Awesome/)
 #Demo
 See the [demo] (http://community-crowdsource.appspot.com)
 
