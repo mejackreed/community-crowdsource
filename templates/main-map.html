@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Community Crowdsource</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="An app for crowdsourcing the locations of illegally dumped tires in Atlanta">
+		<meta name="author" content="Jack Reed @mejackreed">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<!-- Le styles -->
+		<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap.no-icons.min.css" rel="stylesheet">
+		<link href="//netdna.bootstrapcdn.com/font-awesome/2.0/css/font-awesome.css" rel="stylesheet">
+		<style>
+			#body {
+				padding-top: 0; 
+			}
+			#container {
+				position: absolute;
+				top: 55px;
+				left: 0px;
+			}
+			.alert {
+				margin-bottom: 0px;
+			}
+			#message {
+				position: relative;
+			}
+			#map-canvas {
+				position: relative;
+				min-width: 300px;
+				/*top: 40px;*/
+			}
+			#map-canvas img {
+				max-width: none;
+			}
+			.navbar-fixed-top {
+				margin-bottom: 0px;
+			}
+			.navbar, .navbar-inner, .brand {
+				height: 55px;
+			}
+		</style>
+		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+		<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js">
+		</script>
+		<![endif]-->
+		<!-- Le fav and touch icons -->
+		<link rel="shortcut icon" href="assets/ico/favicon.ico">
+		<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
+
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+		<script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+		<script src="assets/js/geolocationmarker-compiled.js"></script>
+		<script src="assets/js/community-crowdsource.js"></script>
+		<script>
+
+			var geocoder = new google.maps.Geocoder();
+			
+			//Define intial location of the map, for my purposes it is usually Atlant, GA
+			var initialLocation = new google.maps.LatLng(33.755, -84.39);
+			
+			var map, layer, tempMarker, addressLoc;
+			var GeoMarker = new GeolocationMarker();
+			var infoWindow = new google.maps.InfoWindow({
+				content : "<a href='#' onClick='removeAddStuff()'>Click to finish adding to the map</a>",
+
+			})
+
+			//Initializes Google Map
+			function initialize() {
+				tempMarker = new google.maps.Marker()
+				map = new google.maps.Map(document.getElementById('map-canvas'), {
+					center : initialLocation,
+					zoom : 11,
+					mapTypeId : google.maps.MapTypeId.ROADMAP,
+					maxZoom : 21,
+					minZoom : 9
+				});
+				//Adds fusion table layer to the map, other options and queries can be added here
+				layer = new google.maps.FusionTablesLayer({
+					query : {
+						select : 'latLng',
+						from : '',
+						where : "latLng > " + (-1 * Math.floor(Math.random() * 10000000))
+					}
+				});
+				layer.setMap(map)
+			};
+
+			$(document).ready(function() {
+				
+				//Resizes modals for mobile devices
+				if ($(window).width() <= 480) {
+					$('.modal').css('position', 'fixed')
+					$('.modal').css('margin-left', 10)
+				}
+				
+				//Resizes map-canvas to fit window 
+				$(window).resize(function() {
+					var h = $(window).height(), offsetTop = 50;
+					var w = $(window).width(), offsetLeft = 0;
+					$('#map-canvas').css('height', (h - offsetTop));
+					$('#map-canvas').css('width', (w - offsetLeft));
+					$('#map-canvas').css('bottom', 0)
+				}).resize();
+				
+				setTimeout();
+				initialize();
+				
+			});
+			
+			//Listener for change of geolocation
+			google.maps.event.addListener(GeoMarker, 'position_changed', function() {
+				map.setCenter(this.getPosition());
+				map.fitBounds(this.getBounds());
+			});
+
+		</script>
+	</head>
+	<body>
+		<div class="navbar navbar-fixed-top navbar-inverse">
+			<div class="navbar-inner">
+				<div class="container">
+					<a class="brand hidden-phone" href="#"> Community Crowdsource </a>
+					<div class="navbar-form">
+						<a href="#" class="btn" id = "geoButton" onClick="getPosition()" style="font-size:32px;"> <i class="icon-screenshot" style=""> </i> </a>
+						<a href="#" class="btn" onClick="addLocation()" style="font-size:32px;"> <i class="icon-edit" > </i> </a>
+						<a href="#" class="btn" onClick="$('#helpModal').modal()" style="font-size:32px;"> <i class="icon-info-sign" > </i> </a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="container">
+			<div id="message">
+				<div class="alert alert-danger">
+					<a class="close" data-dismiss="alert" href="#">&times;</a>Please note, this application is for demonstration purposes only.  For more information contact <a href="http://www.twitter.com/mejackreed">Jack Reed</a>
+				</div>
+			</div>
+			<div id="map-canvas"></div>
+			<div id="dataModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				<div class="modal-body">
+					<div class="form">
+						<form method="post">
+							<label> Address </label>
+							<input type="text" id="address" name="Address" class="uneditable-input" value="{{Address}}">
+							<input type="hidden" name="latLng" value="{{latLng}}">
+							<br>
+							<label> Date </label>
+							<input type="date" name="Date Recorded" value="{{'Date Recorded'}}">
+							<label> Type </label>
+							<select type="select" name="Type" value="{{'Type'}}">
+								<option>Community Garden</option>
+								<option>Playground</option>
+								<option>Suspicious Activity</option>
+								<option>Illegal Dumping</option>
+							</select>
+							<label> Notes </label>
+							<input type="text" name="Notes" placeholder="(Optional)" value="{{Notes}}">
+							<br>
+							<input class="btn btn-success" type="submit" value="Submit">
+							<button class="btn btn-danger" data-dismiss="modal">
+								<i class="icon-remove"></i>
+							</button>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div id="helpModal" class="modal hide fade form-signin" tabindex="-1" role="dialog" aria-labelledby="helpModalLabel" aria-hidden="true">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+						&times;
+					</button>
+					<h3>Community Crowdsource</h3>
+				</div>
+				<div class="modal-body">
+					<p class="">
+						Developed by: Jack Reed <a href="http://www.twitter.com/mejackreed" target="_blank">@mejackreed</a>
+					</p>
+					<p>
+						This application was developed at the Georgia State University <a href="http://geospatial.gsu.edu" target="_blank">Geospatial Laboratories</a> and was designed to aid community members in reporting illegally dumped tires in their communities.
+					</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
